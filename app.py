@@ -2,8 +2,9 @@ import os
 import re
 import io
 import csv
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash
 from werkzeug.utils import secure_filename
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import PyPDF2
 from docx import Document
 import pandas as pd
@@ -13,12 +14,25 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import logging
+from database import User, init_db
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx'}
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Please log in to access this page.'
+login_manager.login_message_category = 'info'
+
+init_db()
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(int(user_id))
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -142,10 +156,88 @@ def calculate_similarity(job_description, resume_texts):
         return [0.0] * len(resume_texts)
 
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        if not name or not email or not password:
+            flash('All fields are required.', 'danger')
+            return render_template('signup.html')
+        
+        if len(password) < 8:
+            flash('Password must be at least 8 characters long.', 'danger')
+            return render_template('signup.html')
+        
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return render_template('signup.html')
+        
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            flash('Please enter a valid email address.', 'danger')
+            return render_template('signup.html')
+        
+        user = User.create(email, name, password)
+        
+        if user is None:
+            flash('Email address already registered. Please login.', 'danger')
+            return render_template('signup.html')
+        
+        login_user(user)
+        flash('Account created successfully! Welcome!', 'success')
+        return redirect(url_for('index'))
+    
+    return render_template('signup.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        remember = request.form.get('remember', False) == 'on'
+        
+        if not email or not password:
+            flash('Email and password are required.', 'danger')
+            return render_template('login.html')
+        
+        user = User.get_by_email(email)
+        
+        if user is None or not user.check_password(password):
+            flash('Invalid email or password.', 'danger')
+            return render_template('login.html')
+        
+        login_user(user, remember=remember)
+        flash('Logged in successfully!', 'success')
+        
+        next_page = request.args.get('next')
+        if next_page:
+            return redirect(next_page)
+        return redirect(url_for('index'))
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('login'))
+
 @app.route('/upload', methods=['POST'])
+@login_required
 def upload_resumes():
     try:
         if 'resumes' not in request.files:
@@ -219,6 +311,7 @@ def upload_resumes():
         return jsonify({'error': f'Error processing resumes: {str(e)}'}), 500
 
 @app.route('/export', methods=['POST'])
+@login_required
 def export_results():
     try:
         data = request.get_json()
