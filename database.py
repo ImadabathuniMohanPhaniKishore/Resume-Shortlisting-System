@@ -43,8 +43,10 @@ class User(UserMixin):
         conn = sqlite3.connect(DATABASE_PATH)
         cursor = conn.cursor()
         
-        existing_user = User.get_by_email(email)
-        if existing_user:
+        cursor.execute('SELECT id, email, name, password_hash FROM users WHERE email = ?', (email,))
+        existing = cursor.fetchone()
+        
+        if existing:
             conn.close()
             return None
         
