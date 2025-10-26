@@ -40,7 +40,7 @@ fileInput.addEventListener('change', (e) => {
 function handleFiles(files) {
     const validFiles = files.filter(file => {
         const ext = file.name.split('.').pop().toLowerCase();
-        return ['pdf', 'docx', 'doc'].includes(ext);
+        return ['pdf', 'docx'].includes(ext);
     });
 
     if (validFiles.length === 0) {

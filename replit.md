@@ -47,7 +47,7 @@ This application helps HR professionals and recruiters quickly identify the most
 ## Features
 
 ### Core Functionality
-1. **Multi-file Upload**: Supports uploading multiple resumes simultaneously (PDF/DOCX)
+1. **Multi-file Upload**: Supports uploading multiple resumes simultaneously (PDF and DOCX formats only)
 2. **Drag-and-Drop Interface**: User-friendly file upload with drag-and-drop support
 3. **NLP-Powered Matching**: Uses TF-IDF and cosine similarity for accurate matching
 4. **Information Extraction**: Automatically extracts candidate name, skills, and experience
@@ -62,6 +62,7 @@ This application helps HR professionals and recruiters quickly identify the most
 - Secure file handling with Werkzeug
 - Real-time progress indicators
 - File validation and error handling
+- Supported file formats: PDF (via PyPDF2) and DOCX (via python-docx)
 
 ## How to Use
 
@@ -91,6 +92,7 @@ The sample resumes are designed to test different matching scenarios:
   - Implemented TF-IDF-based similarity scoring
   - Added CSV export feature
   - Generated 6 sample resumes for testing
+  - Fixed file format support: Removed legacy .doc support to prevent parsing failures (only PDF and DOCX are supported)
 
 ## Architecture Notes
 

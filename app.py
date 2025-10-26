@@ -18,7 +18,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx', 'doc'}
+app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx'}
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -62,7 +62,7 @@ def extract_text(file_path, filename):
     ext = filename.rsplit('.', 1)[1].lower()
     if ext == 'pdf':
         return extract_text_from_pdf(file_path)
-    elif ext in ['docx', 'doc']:
+    elif ext == 'docx':
         return extract_text_from_docx(file_path)
     return ''
 
