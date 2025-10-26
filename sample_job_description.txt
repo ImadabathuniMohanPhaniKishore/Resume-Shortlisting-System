@@ -1,0 +1,31 @@
+Full Stack Developer Position
+
+We are seeking an experienced Full Stack Developer to join our growing team. The ideal candidate will have strong expertise in both frontend and backend technologies.
+
+Required Skills and Qualifications:
+- 3+ years of professional software development experience
+- Strong proficiency in Python and Flask framework
+- Experience with modern JavaScript frameworks (React, Angular, or Vue)
+- Solid understanding of RESTful APIs and microservices architecture
+- Database experience with PostgreSQL or MySQL
+- Knowledge of cloud platforms (AWS, Azure, or GCP)
+- Familiarity with Docker and containerization
+- Experience with Git version control
+- Understanding of CI/CD pipelines
+
+Preferred Skills:
+- Machine Learning or NLP experience
+- Experience with scikit-learn or TensorFlow
+- Knowledge of DevOps practices
+- Agile/Scrum methodology experience
+- Strong problem-solving and communication skills
+
+Responsibilities:
+- Design and develop scalable web applications
+- Build and maintain RESTful APIs
+- Collaborate with cross-functional teams
+- Write clean, maintainable code
+- Participate in code reviews
+- Deploy and monitor applications in production
+
+This role offers the opportunity to work on challenging projects with cutting-edge technologies in a collaborative environment.
