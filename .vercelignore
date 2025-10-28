@@ -1,0 +1,4 @@
+uploads/
+pycache/
+users.db
+*.db
