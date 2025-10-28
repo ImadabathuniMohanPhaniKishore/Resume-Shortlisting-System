@@ -1,0 +1,10 @@
+flask
+flask-login
+flask-bcrypt
+PyPDF2
+python-docx
+nltk
+pandas
+scikit-learn
+werkzeug
+gunicorn
